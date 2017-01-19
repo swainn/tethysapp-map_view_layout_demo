@@ -1,0 +1,163 @@
+#### Ways to use layouts ####
+
+## Out of the Box ######################################################################################################
+
+# app.py
+
+UrlMap(name='map',
+       url='map-view-template-app/map',
+       controller=MapViewLayoutController.as_view()),
+
+# base.html
+
+{% block app_navigation_items %}
+  <li class="title">App Navigation</li>
+  <li {% if request.path == '/apps/map-view-template-app/' %}class="active"{% endif %}><a href="{% url 'map_view_template_app:home' %}">Home</a></li>
+  <li {% if request.path == '/apps/map-view-template-app/map/' %}class="active"{% endif %}><a href="{% url 'map_view_template_app:map' %}">Map</a></li>
+{% endblock %}
+
+## Simple Customizations ###############################################################################################
+
+# app.py
+
+UrlMap(name='map',
+       url='map-view-template-app/map',
+       controller=MapViewLayoutController.as_view(legend=False)),
+
+
+## Override Template ###################################################################################################
+
+# app.py
+
+UrlMap(name='map',
+       url='map-view-template-app/map',
+       controller=MapViewLayoutController.as_view(template_name='map_view_template_app/my_map_view_layout.html')),
+
+# my_map_view_layout.html
+
+{% extends "tethys_layouts/map_view.html" %}
+
+{% block override_controls %}
+    <a class="btn btn-default" onclick="alert('My Custom Control!');">Custom Control</a>
+{% endblock %}
+
+
+## Override Controller #################################################################################################
+
+# contollers.py
+
+from tethys_sdk.layouts import MapViewLayoutController
+
+...
+
+class MyMapViewLayoutController(MapViewLayoutController):
+    """
+    My customized map view layout controller.
+    """
+
+    def build_layers(self, request, *args, **kwargs):
+        """
+        Custom layers.
+        """
+        map_layers = []
+
+        kml_layer = MVLayer(source='KML',
+                            options={'url': '/static/tethys_gizmos/data/model.kml'},
+                            legend_title='Park City Watershed',
+                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_classes=[
+                                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                            ])
+
+        map_layers.append(kml_layer)
+
+        # Define GeoJSON layer
+        geojson_object = {
+            'type': 'FeatureCollection',
+            'crs': {
+                'type': 'name',
+                'properties': {
+                    'name': 'EPSG:3857'
+                }
+            },
+            'features': [
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [0, 0]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                    }
+                }
+            ]
+        }
+
+        geojson_layer = MVLayer(source='GeoJSON',
+                                options=geojson_object,
+                                legend_title='Test GeoJSON',
+                                legend_extent=[-46.7, -48.5, 74, 59],
+                                legend_classes=[
+                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
+                                                  stroke='#3d9dcd'),
+                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                ])
+
+        map_layers.append(geojson_layer)
+
+        # Tiled ArcGIS REST Layer
+        arc_gis_layer = MVLayer(source='TileArcGISRest',
+                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+                                                'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                legend_title='ESRI USA Highway',
+                                legend_extent=[-173, 17, -65, 72])
+
+        map_layers.append(arc_gis_layer)
+        return map_layers
+
+# app.py
+
+from controllers import MyMapViewLayoutController
+
+...
+
+UrlMap(name='map',
+       url='map-view-template-app/map',
+       controller=MyMapViewLayoutController.as_view()),
+
+
+## Handle Save Event ###################################################################################################
+
+# controller.py
+
+    class MyMapViewLayoutController(MapViewLayoutController):
+        """
+        My customized map view layout controller.
+        """
+        ....
+
+        def on_save(self, request, *args, **kwargs):
+            """
+            Handle a save event from the map.
+            """
+            success = True
+            geometry = request.POST.get('geometry', {})
+            if geometry:
+                # Save to DB, Shapefile, or other storage backend
+                print(geometry)
+            else:
+                success = False
+            return success
