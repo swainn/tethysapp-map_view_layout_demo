@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from tethys_sdk.layouts import MapViewLayoutController
-from tethys_sdk.gizmos import MVLayer, MVLegendClass
+# from .app import MapViewTemplateApp as test   // This is a problem, not sure why bt it won't
+# let me import the app as a package for reference...important for file storage
+from tethys_sdk.gizmos import *
 
 
 @login_required()
@@ -18,6 +20,17 @@ class MyMapViewLayoutController(MapViewLayoutController):
     """
     My customized map view layout controller.
     """
+    def build_map_view(self, request, *args, **kwargs):
+        map_view_gizmo = MapView(
+            height='600px',
+            width='100%',
+            controls=self.build_controls(request, args, kwargs),
+            layers=self.build_layers(request, args, kwargs),
+            view=self.build_mvview(request, args, kwargs),
+            basemap=self.basemap,
+            draw=self.build_mvdraw(request, args, kwargs),
+        )
+        return map_view_gizmo
 
     def build_layers(self, request, *args, **kwargs):
         """

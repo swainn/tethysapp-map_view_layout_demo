@@ -1,5 +1,4 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
-from tethys_sdk.layouts import MapViewLayoutController
 from controllers import MyMapViewLayoutController
 
 
