@@ -20,6 +20,8 @@ class MyMapViewLayoutController(MapViewLayoutController):
     """
     My customized map view layout controller.
     """
+    # attr_table = False
+    # nav_pane = False
     def build_map_view(self, request, *args, **kwargs):
         map_view_gizmo = MapView(
             height='600px',
@@ -28,7 +30,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
             layers=self.build_layers(request, args, kwargs),
             view=self.build_mvview(request, args, kwargs),
             basemap=self.basemap,
-            draw=self.build_mvdraw(request, args, kwargs),
+            # draw=self.build_mvdraw(request, args, kwargs),
         )
         return map_view_gizmo
 
