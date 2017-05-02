@@ -43,7 +43,8 @@ class MyMapViewLayoutController(MapViewLayoutController):
         kml_layer = MVLayer(source='KML',
                             options={'url': '/static/tethys_gizmos/data/model.kml'},
                             legend_title='Park City Watershed',
-                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            data={'tethys_toc':True},
+                            # legend_extent=[-111.60, 40.57, -111.43, 40.70],
                             legend_classes=[
                                 MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                 MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
