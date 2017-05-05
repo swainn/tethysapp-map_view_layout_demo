@@ -49,8 +49,18 @@ class MyMapViewLayoutController(MapViewLayoutController):
                                 MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                 MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
                             ])
+        test_layer = MVLayer(source='KML',
+                            options={'url': '/static/tethys_gizmos/data/model.kml'},
+                            legend_title='Park City Watershed (2)',
+                            data={'tethys_toc':True},
+                            # legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_classes=[
+                                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                            ])
 
         map_layers.append(kml_layer)
+        map_layers.append(test_layer)
 
         # Define GeoJSON layer
         geojson_object = {
@@ -89,6 +99,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
         geojson_layer = MVLayer(source='GeoJSON',
                                 options=geojson_object,
                                 legend_title='Test GeoJSON',
+                                data={'tethys_toc':True},
                                 legend_extent=[-46.7, -48.5, 74, 59],
                                 legend_classes=[
                                     MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
@@ -102,6 +113,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
         arc_gis_layer = MVLayer(source='TileArcGISRest',
                                 options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
                                                 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                data={'tethys_toc':True},
                                 legend_title='ESRI USA Highway',
                                 legend_extent=[-173, 17, -65, 72])
 
