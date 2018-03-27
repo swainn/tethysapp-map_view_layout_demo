@@ -22,6 +22,10 @@ class MyMapViewLayoutController(MapViewLayoutController):
     """
     # attr_table = False
     # nav_pane = False
+
+    # template_name = "map_view_template_app/my_map_view_layout.html"
+    toc_legend = True
+
     def build_map_view(self, request, *args, **kwargs):
         map_view_gizmo = MapView(
             height='600px',
@@ -30,7 +34,8 @@ class MyMapViewLayoutController(MapViewLayoutController):
             layers=self.build_layers(request, args, kwargs),
             view=self.build_mvview(request, args, kwargs),
             basemap=self.basemap,
-            # draw=self.build_mvdraw(request, args, kwargs),
+            toc_legend=self.toc_legend,
+            draw=self.build_mvdraw(request, args, kwargs),
         )
         return map_view_gizmo
 
@@ -44,7 +49,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
                             options={'url': '/static/tethys_gizmos/data/model.kml'},
                             legend_title='Park City Watershed',
                             data={'tethys_toc':True},
-                            # legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
                             legend_classes=[
                                 MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                 MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
@@ -53,7 +58,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
                             options={'url': '/static/tethys_gizmos/data/model.kml'},
                             legend_title='Park City Watershed (2)',
                             data={'tethys_toc':True},
-                            # legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
                             legend_classes=[
                                 MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                 MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
@@ -98,8 +103,12 @@ class MyMapViewLayoutController(MapViewLayoutController):
 
         geojson_layer = MVLayer(source='GeoJSON',
                                 options=geojson_object,
+                                editable=True,
                                 legend_title='Test GeoJSON',
-                                data={'tethys_toc':True},
+                                data={
+                                      'tethys_toc':True,
+                                      'resType':'GeographicFeatureResource',
+                                     },
                                 legend_extent=[-46.7, -48.5, 74, 59],
                                 legend_classes=[
                                     MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
