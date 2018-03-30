@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from tethys_sdk.layouts import MapViewLayoutController
-# from .app import MapViewTemplateApp as test   // This is a problem, not sure why bt it won't
-# let me import the app as a package for reference...important for file storage
+from .app import MapViewTemplateApp as myApp
 from tethys_sdk.gizmos import *
+import os
 
 
 @login_required()
@@ -21,7 +21,7 @@ class MyMapViewLayoutController(MapViewLayoutController):
     My customized map view layout controller.
     """
     # attr_table = False
-    # nav_pane = False
+    nav_pane = False
 
     # template_name = "map_view_template_app/my_map_view_layout.html"
     toc_legend = True
@@ -128,3 +128,8 @@ class MyMapViewLayoutController(MapViewLayoutController):
 
         map_layers.append(arc_gis_layer)
         return map_layers
+    def on_save(self, request, *args, **kwargs):
+        post_data = request.POST
+        file_dir = os.path.join(myApp.get_app_workspace().path, 'map_data.txt')
+        with open(file_dir, 'w+') as file:
+            file.write(str(post_data))

@@ -1,5 +1,5 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
-from controllers import MyMapViewLayoutController
+
 
 
 class MapViewTemplateApp(TethysAppBase):
@@ -19,6 +19,8 @@ class MapViewTemplateApp(TethysAppBase):
     feedback_emails = []
 
     def url_maps(self):
+        from controllers import MyMapViewLayoutController
+        # from tethys_sdk.layouts import MapViewLayoutController
         """
         Add controllers
         """
